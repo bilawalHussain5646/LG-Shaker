@@ -1,0 +1,428 @@
+{% extends "default.html" %} {%block content%}
+
+<div class="row">
+  <div class="col-12">
+    <h3 class="p-3"><span class="text-dark">Registered Users</span></h3>
+  </div>
+  <div>
+    <div class="text-nowrap" style="border-radius: 25px">
+      <div class="row px-4">
+        <div class="col">
+          <h4 class="text-center">
+            <span class="text-dark"></span>
+          </h4>
+        </div>
+        <div class="col-auto">
+          <button
+            class="btn-sm btn-danger text-light px-3 border-0 me-2 text-uppercase"
+            style="border-radius: 10px"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#myModal"
+          >
+            Add User
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive" style="padding: 0 30px; text-wrap: nowrap">
+        <table class="table" style="margin: 30px 0px 60px 0px">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">S.NO</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Username</th>
+              <th scope="col">Role</th>
+              <th scope="col" class="text-center">Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in pagination.items %}
+            <tr>
+              <th scope="row">{{(pagination.page-1)*10+loop.index}}</th>
+
+              <td>
+                {% if not record.name %} {%else%}{{ record.name }}{%endif%}
+              </td>
+              <td class="text-lowercase">
+                {% if not record.email %} {%else%}{{ record.email }}{%endif%}
+              </td>
+              <td class="text-lowercase">
+                {% if not record.username %} {%else%}{{ record.username
+                }}{%endif%}
+              </td>
+              <td>
+                {% if not record.role %} {%else%} {% if record.role == 2 %}
+                Master Admin {% elif record.role == 1 %} Admin {% else %} User
+                {% endif %} {%endif%}
+              </td>
+
+              <td>
+                <button
+                  class="btn text-danger p-0"
+                  data-bs-toggle="modal"
+                  data-bs-target="#myModal_update"
+                  onclick="fetch_updated_entry('{{record.id}}')"
+                >
+                  <i class="fa fa-pencil fa-2x" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  class="btn text-danger ms-2 p-0"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#myModal_delete"
+                  onclick="open_delete_box('{{record.id}}')"
+                >
+                  <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          {% if pagination.has_prev %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{pagination.prev_num}}"
+              tabindex="-1"
+              >Previous</a
+            >
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a
+              class="page-link"
+              href="?page={{pagination.prev_num}}"
+              tabindex="-1"
+              >Previous</a
+            >
+          </li>
+          {% endif %} {% for number in pagination.iter_pages() %} {% if
+          pagination.page != number %} {% if number==None %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">...</a>
+          </li>
+          {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{number}}">{{number}}</a>
+          </li>
+          {%endif%} {% else %}
+          <li class="page-item active">
+            <a class="page-link" href="#">{{number}}</a>
+          </li>
+
+          {% endif %} {% endfor %} {% if pagination.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{pagination.next_num}}">Next</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">Next</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Add New User</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form action="{{url_for('signup')}}" method="POST">
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group mt-2">
+            <label for="name" class="form-label"
+              >Name <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="name"
+              id="name"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="email" class="form-label"
+              >Email<span class="text-danger">*</span></label
+            >
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              id="email"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="username" class="form-label"
+              >Username<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="username"
+              id="username"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="role" class="form-label"
+              >Role<span class="text-danger">*</span></label
+            >
+            <select class="form-select" id="role" name="role" required>
+              <option value="">Select role</option>
+              <option value="2">Master Admin</option>
+              <option value="1">Admin</option>
+              <option value="3">User</option>
+            </select>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="password" class="form-label"
+              >Password<span class="text-danger">*</span></label
+            >
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              id="password"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="confirm_password" class="form-label"
+              >Confirm Password<span class="text-danger">*</span></label
+            >
+            <input
+              type="password"
+              class="form-control"
+              name="confirm_password"
+              id="confirm_password"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-light">Submit</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="myModal_delete">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Are you sure you want to delete?</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          onclick="close_delete_box()"
+        ></button>
+      </div>
+      <form action="{{url_for('deleteUser')}}" method="POST">
+        <!-- Modal body -->
+        <div class="form-group">
+          <label for="" class="form-label p-3"
+            ><h5 class="text-dark">Note:</h5>
+            <p class="text-danger px-3">
+              * Once the user is deleted we can't retrieve it back
+            </p></label
+          >
+        </div>
+        <input type="text" name="id" id="entry_id_delete" readonly hidden />
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Delete</button>
+          <button
+            type="button"
+            class="btn btn-light"
+            data-bs-dismiss="modal"
+            onclick="close_delete_box()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="myModal_update">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Update User</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          onclick="clear_fields()"
+        ></button>
+      </div>
+      <form
+        action="{{url_for('update_user_data')}}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group mt-2">
+            <label for="name_update" class="form-label"
+              >Name <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="name_update"
+              id="name_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="email_update" class="form-label"
+              >Email<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="email_update"
+              id="email_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="username_update" class="form-label"
+              >Username<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="username_update"
+              id="username_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="role_update" class="form-label"
+              >Role<span class="text-danger">*</span></label
+            >
+            <select
+              class="form-select"
+              id="role_update"
+              name="role_update"
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="2">Master Admin</option>
+              <option value="1">Admin</option>
+              <option value="3">User</option>
+            </select>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="password_update" class="form-label"
+              >Password<span class="text-danger">*</span></label
+            >
+            <input
+              type="password"
+              class="form-control"
+              name="password_update"
+              id="password_update"
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="confirm_password_update" class="form-label"
+              >Confirm password<span class="text-danger">*</span></label
+            >
+            <input
+              type="password"
+              class="form-control"
+              name="confirm_password_update"
+              id="confirm_password_update"
+            />
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <input type="text" name="entry_id" id="entry_id" readonly hidden />
+          <button type="submit" class="btn btn-light">Update</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            onclick="clear_fields()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function open_delete_box(entry_id) {
+    document.getElementById("entry_id_delete").value = entry_id;
+  }
+  function close_delete_box() {
+    document.getElementById("entry_id_delete").value = "";
+  }
+  function clear_fields() {
+    document.getElementById("name_update").value = "";
+    document.getElementById("email_update").value = "";
+    document.getElementById("username_update").value = "";
+    document.getElementById("role_update").value = "";
+    document.getElementById("password_update").value = "";
+    document.getElementById("confirm_password_update").value = "";
+    document.getElementById("entry_id").value = "";
+  }
+
+  function fetch_updated_entry(entry_id) {
+    console.log(entry_id);
+
+    // update_entry_data
+    $.get(`/users/${entry_id}`, function (data, status) {
+      console.log(status);
+      if (status == "success") {
+        document.getElementById("name_update").value = data["name"];
+        document.getElementById("email_update").value = data["email"];
+        document.getElementById("username_update").value = data["username"];
+        document.getElementById("role_update").value = data["role"];
+
+        document.getElementById("entry_id").value = entry_id;
+      } else {
+        console.log("Error completing your request");
+      }
+    });
+  }
+</script>
+{%endblock%}

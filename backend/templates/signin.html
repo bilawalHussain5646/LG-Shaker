@@ -1,0 +1,40 @@
+{% extends "default.html" %} 
+
+{%block signinblock%}
+<div class="row d-flex align-items-center" style="color:#494c4f">
+  <div class="col-12 text-center mt-5">
+    <h3 class="p-3"><span class="" style="color:#494c4f">Admin</span> Login Area</h3>
+  </div>
+  </div>
+  <!-- Predictions  -->
+
+<form action="{{url_for('index')}}" method="POST" class="row text-dark body-form-custom rounded">
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+  <div class="col-12 alert alert-{{category}}" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+  <div class="col-12 mb-3">
+    <label for="email" class="form-label">Email ID <span class="text-danger">*</span></label>
+    <input type="email" class="form-control" name="email" id="email" value="{{email}}" aria-describedby="emailHelp">
+  </div>
+ <div class="col-12 mb-4">
+   <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+    <input type="password" id="password" name="password" value="{{password}}" class="form-control">
+</div>  
+
+
+  <div class="row m-0">
+    <button type="submit" class="col-6 col-lg-6 btn btn-danger w-100">Login</button>
+  </div>
+
+  <!-- <div id="alreadyhaveaccount" class="form-text col-12 mb-3 text-center my-3">
+ Dont have an account? <a class="text-warning" href="{{url_for('signup')}}">Signup</a>
+</div> -->
+</form>
+
+  <!--  -->
+</div>
+
+{%endblock%}
+

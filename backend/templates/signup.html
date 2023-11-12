@@ -1,0 +1,63 @@
+{% extends "default.html" %} 
+
+{%block content%}
+<div class="row text-light">
+  <div class="col-12 text-center mt-5">
+    <h3 class="p-3"><span class="text-warning">Signup</span> Your Account</h3>
+  </div>
+  </div>
+  <!-- Predictions  -->
+
+<form action="{{url_for('signup')}}" method="post" class="row text-light body-form-custom rounded">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+  <div class="col-12 alert alert-{{category}}" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+    <div class="col-12 col-lg-6 mb-3">
+        <label for="first_name" class="form-label">First name <span class="text-danger">*</span> </label>
+        <input type="text" class="form-control" name="first_name" id="first_name" >
+        <div class="form-text">e.g : John </div>
+    </div>
+   <div class="col-12 col-lg-6 mb-3">
+        <label for="last_name" class="form-label">Last name <span class="text-danger">*</span> </label>
+        <input type="text" class="form-control" name="last_name" id="last_name" >
+        <div  class="form-text">e.g : Smith </div>
+    </div>
+  <div class="col-12 col-lg-6 mb-3">
+    <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
+    <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+   <div class="col-12 col-lg-6 mb-3">
+        <label for="username" class="form-label">Username <span class="text-danger">*</span> </label>
+        <input type="text" class="form-control" name="username" id="username" >
+        <div  class="form-text">e.g : johnsmith123 </div>
+    </div>
+ <div class="col-12 col-lg-6">
+   <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+    <input type="password" id="password" name="password" class="form-control">
+</div>  
+ <div class="col-12 col-lg-6">
+   <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+    <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+
+  </div>
+<div id="passwordHelpBlock" class="form-text col-12 mb-3">
+  Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+</div>
+
+  
+  <div class="row m-0">
+    <button type="submit" class="col-12 col-lg-6 btn btn-success w-100">Register</button>
+  </div>
+  <div id="alreadyhaveaccount" class="form-text col-12 mb-3 text-center my-3">
+  Already have an account? <a class="text-warning" href="{{url_for('signin')}}">Signin</a>
+</div>
+</form>
+
+  <!--  -->
+</div>
+
+{%endblock%}
+

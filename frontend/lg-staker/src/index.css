@@ -1,0 +1,145 @@
+@font-face {
+  font-family: "LG-EI";
+  src: url(./fonts/regular.otf);
+}
+
+@font-face {
+  font-family: "LG-EI-heading";
+  src: url(./fonts/bold.otf);
+}
+
+@font-face {
+  font-family: "LG-EI-paragraph";
+  src: url(./fonts/light.otf);
+}
+body {
+  color: #242526;
+  font-family: "LG-EI" !important;
+}
+table {
+  background-color: white;
+  border-radius: 15px;
+  margin: 15px 0px;
+  border: 1px solid black;
+}
+thead {
+  padding-top: 15px !important;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "LG-EI-heading" !important;
+}
+p {
+  font-family: "LG-EI-paragraph" !important;
+}
+.btn-danger {
+  background-color: #a50034 !important;
+  border-color: #a50034 !important;
+}
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-sm:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-danger:hover {
+  border-color: #cc0041 !important;
+  background-color: #cc0041 !important;
+  outline: none;
+  box-shadow: none;
+}
+.text-danger {
+  color: #a50034 !important;
+}
+.bg-dark {
+  background-color: black !important;
+}
+.body-block {
+  background-color: white;
+  height: 94vh;
+  padding: 12px 15px;
+}
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: white;
+  }
+}
+.bg-custom-black {
+  background-color: white;
+  border-color: none !important;
+}
+.navbar-custom-black {
+  background-color: white;
+  border-bottom: 2px solid #242526;
+}
+.body-form-custom {
+  width: 70%;
+  margin: auto;
+  padding: 15px;
+  background-color: white;
+}
+.page-link {
+  color: black;
+}
+.page-link:hover {
+  color: black;
+}
+
+.page-item.active .page-link {
+  background-color: #a50034 !important;
+  border-color: #a50034 !important;
+}
+.page-item.active:focus,
+.page-link:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.page-item::selection {
+  color: black !important;
+}
+.table > :not(caption) > * > * {
+  padding: 1rem !important;
+}
+input {
+  border-radius: 10px !important;
+  border: 1px solid #7c7c7d !important;
+}
+
+.custom-width {
+  width: 50%;
+}
+@media (max-width: 600px) {
+  .custom-width {
+    width: 100%;
+  }
+}
+.pagination {
+  max-width: 100% !important;
+  overflow: inherit !important;
+  display: flex !important;
+}
+th,
+td {
+  text-align: center !important;
+  text-wrap: nowrap;
+  height: fit-content;
+  vertical-align: middle;
+
+  border: 1px solid black !important;
+  width: auto;
+}
+th {
+  background-color: #e7e6e6 !important;
+}
+td {
+  text-transform: uppercase;
+}
+table {
+  border: 1px solid black !important;
+}

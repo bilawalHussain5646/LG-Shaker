@@ -1,0 +1,795 @@
+{% extends "default.html" %} {%block content%}
+
+<div class="row text-light">
+  <div class="col-12">
+    <h3 class="p-3"><span class="text-dark">Dashboard</span></h3>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <h4 class="text-center text-dark">LG Shaker Co. Lab.</h4>
+    </div>
+    <div class="col-auto"></div>
+  </div>
+  <div class="row m-0">
+    <form
+      class="col d-flex justify-content-start px-3"
+      method="GET"
+      action="/dashboard"
+    >
+      <div class="col-auto">
+        <div class="form-group">
+          <input
+            class="form-control-sm"
+            type="text"
+            name="text"
+            id="text"
+            placeholder="Model name"
+          />
+        </div>
+      </div>
+      <!-- <div class="col-auto pe-0">
+        <div class="form-group">
+          <label for="" class="form-label text-dark">Date</label>
+        </div>
+      </div>
+      <div class="col-auto pe-0">
+        <div class="form-group">
+          <input
+            type="date"
+            class="form-control-sm"
+            name="start_date"
+            id="start_name"
+          />
+        </div>
+      </div>
+      <div class="col-auto pe-0">
+        <div class="form-group">
+          <input
+            type="date"
+            class="form-control-sm"
+            name="end_date"
+            id="end_name"
+          />
+        </div>
+      </div> -->
+
+      <button
+        class="btn-sm btn-danger text-light px-3 border-0 ms-2 text-uppercase"
+        style="border-radius: 10px"
+        type="submit"
+      >
+        Search
+      </button>
+    </form>
+    <form
+      class="col d-flex justify-content-end px-3"
+      method="POST"
+      action="/download-excel"
+    >
+      <button
+        class="btn-sm btn-danger text-light px-3 border-0 ms-2"
+        style="border-radius: 10px"
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#myModal"
+      >
+        ADD ENTRY
+      </button>
+      <button
+        class="btn-sm text-dark px-3 border-0 ms-2"
+        style="border-radius: 10px; background-color: white"
+      >
+        EXPORT IN EXCEL
+      </button>
+    </form>
+  </div>
+  <div class="table-responsive" style="padding: 0 30px; text-wrap: nowrap">
+    <table class="table" style="margin: 30px 0px 60px 0px">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">S.No</th>
+          <th scope="col">Model Name</th>
+          <th scope="col">Report Number</th>
+          <th>Issue Date</th>
+          <th>Contact Number</th>
+          <th>Country of Origin</th>
+          <th>Lab Name</th>
+          <th>Manufacturer Name</th>
+          <th>View</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in pagination.items %}
+        <tr>
+          <th scope="row">{{(pagination.page-1)*10+loop.index}}</th>
+          <td>
+            {% if not record.model_name %} {%else%}{{ record.model_name
+            }}{%endif%}
+          </td>
+          <td>
+            {% if not record.report_number %} {%else%} {{ record.report_number
+            }}{%endif%}
+          </td>
+          <td style="text-transform: capitalize !important">
+            {% if not record.issue_date %} {%else%} {{
+            record.issue_date.strftime('%d-%b-%y') }} {%endif%}
+          </td>
+          <td>
+            {% if not record.contact_number %} {%else%}{{ record.contact_number
+            }}{%endif%}
+          </td>
+          <td>
+            {% if not record.country_of_origin %} {%else%}{{
+            record.country_of_origin }}{%endif%}
+          </td>
+          <td>
+            {% if not record.lab_name %} {%else%}{{ record.lab_name }}{%endif%}
+          </td>
+          <td>
+            {% if not record.manufacturer_name %} {%else%}{{
+            record.manufacturer_name }}{%endif%}
+          </td>
+          <td>
+            {% if not record.pdf_file %}
+            <button
+              class="bg-transparent border-0 text-danger text-start p-0"
+              disabled
+            >
+              Missing
+            </button>
+            {% else %}
+            <button
+              class="btn text-danger p-0"
+              data-bs-toggle="modal"
+              data-bs-target="#myModal_view"
+              onclick="open_view_box('{{record.id}}')"
+            >
+              <i class="fa fa-eye fa-2x" aria-hidden="true"></i>
+            </button>
+
+            {% endif %}
+          </td>
+          <td>
+            <button
+              class="btn text-danger p-0"
+              data-bs-toggle="modal"
+              data-bs-target="#myModal_update"
+              onclick="fetch_updated_entry('{{record.id}}')"
+            >
+              <i class="fa fa-pencil fa-2x" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="btn text-danger ms-2 p-0"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#myModal_delete"
+              onclick="open_delete_box('{{record.id}}')"
+            >
+              <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{pagination.prev_num}}" tabindex="-1"
+          >Previous</a
+        >
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="?page={{pagination.prev_num}}" tabindex="-1"
+          >Previous</a
+        >
+      </li>
+      {% endif %} {% for number in pagination.iter_pages() %} {% if
+      pagination.page != number %} {% if number==None %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#">...</a>
+      </li>
+      {% else %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{number}}">{{number}}</a>
+      </li>
+      {%endif%} {% else %}
+      <li class="page-item active">
+        <a class="page-link" href="#">{{number}}</a>
+      </li>
+
+      {% endif %} {% endfor %} {% if pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{pagination.next_num}}">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog" style="max-width: 800px !important">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="row px-2 py-2">
+        <h4 class="col text-center ps-5">Data Entry Form</h4>
+        <div class="col-auto">
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <h5 class="text-success text-center my-2">Single Entry</h5>
+
+          <form
+            action="{{url_for('add_entry_data')}}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="form-group mt-2">
+                <label for="model_name" class="form-label"
+                  >Model name <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="model_name"
+                  id="model_name"
+                  required
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="report_number" class="form-label"
+                  >Report Number<span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="report_number"
+                  id="report_number"
+                  required
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="issue_date" class="form-label"
+                  >Issue Date<span class="text-danger">*</span></label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  name="issue_date"
+                  id="issue_date"
+                  required
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="country_of_origin" class="form-label"
+                  >Country of Origin<span class="text-danger">*</span></label
+                >
+                <select
+                  class="form-select"
+                  id="country_of_origin"
+                  name="country_of_origin"
+                  required
+                >
+                  <option value="">Select Country</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="China">China</option>
+                  <option value="South Korea">South Korea</option>
+                  <option value="Thailand">Thailand</option>
+                </select>
+              </div>
+
+              <div class="form-group mt-2">
+                <label for="contact_number" class="form-label"
+                  >Contact Number<span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="contact_number"
+                  id="contact_number"
+                  required
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="lab_name" class="form-label"
+                  >Lab Name<span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="lab_name"
+                  required
+                  id="lab_name"
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="manufacturer_name" class="form-label"
+                  >Manufacturer Name<span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="manufacturer_name"
+                  id="manufacturer_name"
+                  required
+                />
+              </div>
+              <div class="form-group mt-2">
+                <label for="pdf_file" class="form-label">PDF File</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  name="pdf_file"
+                  id="pdf_file"
+                />
+              </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger px-4">SUBMIT</button>
+            </div>
+          </form>
+        </div>
+        <div class="col-auto bg-light p-0 my-1" style="width: 2px"></div>
+        <div class="col">
+          <h5 class="text-success text-center my-2">Multiple Entry</h5>
+          <div class="modal-body">
+            <form
+              action="{{url_for('add_multiple_data')}}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="form-group pe-3 mb-2 mt-1">
+                <label class="form-label" for="excel_file"
+                  >Upload Excel file<span class="text-danger">*</span></label
+                >
+                <input
+                  class="form-control"
+                  type="file"
+                  name="excel_file"
+                  id="excel_file"
+                />
+              </div>
+              <div class="form-group pe-3 mb-2">
+                <label class="form-label" for="zip_file"
+                  >Upload PDF Report<span class="text-danger">*</span></label
+                >
+                <input
+                  class="form-control"
+                  type="file"
+                  name="zip_file"
+                  id="zip_file"
+                />
+              </div>
+              <button
+                type="submit"
+                class="btn btn-danger border-0 text-white px-4 mt-3"
+              >
+                EXECUTE UPLOADING
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="myModal_delete">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+        <h4 class="modal-title text-success">Confirmation</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          onclick="close_delete_box()"
+        ></button>
+      </div>
+      <form action="{{url_for('delete_entry_user')}}" method="POST">
+        <!-- Modal body -->
+        <div class="form-group">
+          <label for="" class="form-label p-3"
+            ><h5 class="text-dark">Do you want to delete this Entry?</h5>
+            <p class="text-danger">
+              Note: * Once the entry is deleted we can't retrieve it back
+            </p></label
+          >
+        </div>
+        <input type="text" name="id" id="entry_id_delete" readonly hidden />
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Delete</button>
+          <button
+            type="button"
+            class="btn btn-light"
+            data-bs-dismiss="modal"
+            onclick="close_delete_box()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Report -->
+<div class="modal" id="myModal_view">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header d-flex justify-content-center">
+        <h4 class="modal-title text-success">View Report</h4>
+      </div>
+      <input type="text" name="id" id="entry_id_view" readonly hidden />
+
+      <!-- Modal body -->
+      <div class="form-group d-flex justify-content-center">
+        <!-- Your image here  -->
+        <div class="row m-0">
+          <div class="col-6 d-flex justify-content-end">
+            <img id="qr_code_image" src="" alt="qr_code" width="150px" />
+          </div>
+          <div class="col p-4 px-2 d-flex align-content-center">
+            <div class="row m-0 d-flex align-content-center">
+              <div class="col p-0">Scan the Code</div>
+
+              <div class="col-4">
+                <button
+                  id="copy_title_image"
+                  title="Copy to clipboard"
+                  onclick="copyImageToClipboard()"
+                  style="
+                    margin-left: 5px;
+                    font-size: 14px;
+                    background-color: transparent;
+                    color: #1882ba;
+                    border: 1px solid #f0eeee;
+                  "
+                >
+                  <i class="fa fa-copy"></i>
+                </button>
+              </div>
+              <div class="col-8 p-0" style="display: flex; text-wrap: nowrap">
+                <a
+                  id="view_link"
+                  href=""
+                  target="_blank"
+                  class="bg-transparent border-0 text-danger text-decoration-underline text-start p-0"
+                >
+                  Click here to view</a
+                >
+              </div>
+              <div class="col-4">
+                <button
+                  id="link_copy_btn"
+                  title="Copy link"
+                  onclick="copyTextToClipboard()"
+                  style="
+                    margin-left: 5px;
+                    font-size: 14px;
+                    background-color: transparent;
+                    color: #1882ba;
+                    border: 1px solid #f0eeee;
+                  "
+                >
+                  <i class="fa fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Copy icon -->
+        <!--  -->
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-light"
+          data-bs-dismiss="modal"
+          onclick="close_view_box()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End here -->
+
+<div class="modal" id="myModal_update">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Update Entry</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          onclick="clear_fields()"
+        ></button>
+      </div>
+      <form
+        action="{{url_for('update_entry_data')}}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group mt-2">
+            <label for="model_name_update" class="form-label"
+              >Model name <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="model_name_update"
+              id="model_name_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="report_number_update" class="form-label"
+              >Report Number<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="report_number_update"
+              id="report_number_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="issue_date_update" class="form-label"
+              >Issue Date<span class="text-danger">*</span></label
+            >
+            <input
+              type="date"
+              class="form-control"
+              name="issue_date_update"
+              id="issue_date_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="country_of_origin_update" class="form-label"
+              >Country of Origin<span class="text-danger">*</span></label
+            >
+            <select
+              class="form-select"
+              id="country_of_origin_update"
+              name="country_of_origin_update"
+              required
+            >
+              <option value="">Select Country</option>
+              <option value="Saudi Arabia">Saudi Arabia</option>
+              <option value="China">China</option>
+              <option value="South Korea">South Korea</option>
+              <option value="Thailand">Thailand</option>
+            </select>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="contact_number_update" class="form-label"
+              >Contact Number<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="contact_number_update"
+              id="contact_number_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="lab_name_update" class="form-label"
+              >Lab Name<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="lab_name_update"
+              id="lab_name_update"
+              required
+            />
+          </div>
+          <div class="form-group mt-2">
+            <label for="manufacturer_name_update" class="form-label"
+              >Manufacturer Name<span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="manufacturer_name_update"
+              id="manufacturer_name_update"
+              required
+            />
+          </div>
+          <label for="" name="pdf_file_exist" id="pdf_file_exist"></label>
+          <div class="form-group mt-2">
+            <label for="pdf_file_update" class="form-label">PDF File</label>
+            <input
+              type="file"
+              class="form-control"
+              name="pdf_file_update"
+              id="pdf_file_update"
+            />
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <input type="text" name="entry_id" id="entry_id" hidden readonly />
+          <button type="submit" class="btn btn-light">UPDATE</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            onclick="clear_fields()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.2.2/html2canvas.min.js"></script>
+<script>
+  function copyImageToClipboard() {
+    html2canvas(document.querySelector("#qr_code_image"), {
+      logging: false,
+    }).then((canvas) =>
+      canvas.toBlob((blob) =>
+        navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+      )
+    );
+    document
+      .getElementById("copy_title_image")
+      .setAttribute("title", "Image Copied");
+  }
+
+  function open_delete_box(entry_id) {
+    document.getElementById("entry_id_delete").value = entry_id;
+  }
+
+  function close_delete_box() {
+    document.getElementById("entry_id_delete").value = "";
+  }
+  function copyTextToClipboard() {
+    let text = document.getElementById("view_link").getAttribute("href");
+    const baseURL = window.location.origin;
+    console.log(baseURL + text);
+    let full_link = baseURL + text;
+    // Create a new text area element
+    const textArea = document.createElement("textarea");
+
+    // Set the text content to the text you want to copy
+    textArea.value = full_link;
+
+    // Append the text area to the document
+    document.body.appendChild(textArea);
+
+    // Select the text inside the text area
+    textArea.select();
+
+    // Execute the "copy" command to copy the selected text to the clipboard
+    document.execCommand("copy");
+
+    // Remove the temporary text area
+    document.body.removeChild(textArea);
+    document
+      .getElementById("link_copy_btn")
+      .setAttribute("title", "Link copied");
+  }
+  function open_view_box(entry_id) {
+    // console.log(entry_id);
+    let url_fetch = "{{ url_for('get_qr_code',entry_id='$text')}}".replace(
+      "$text",
+      entry_id
+    );
+
+    // Send an AJAX request to fetch the image data
+    fetch(url_fetch) // Replace with your image API route
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          // Set the retrieved image data as the src attribute of the <img> tag
+          console.log(data);
+          document.getElementById("qr_code_image").src =
+            "data:image/jpeg;base64," + data.image_data; // Adjust the MIME type accordingly
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching image:", error);
+      });
+
+    document.getElementById("entry_id_view").value = entry_id;
+    // let entry_id = entry_id.toString();
+    // entry_id = "{{ entry_id }}";  // Ensure entry_id is a valid JavaScript variable.
+    var url_ = "{{ url_for('download', entry_id = '$text' ) }}".replace(
+      "$text",
+      entry_id
+    );
+    document.getElementById("view_link").setAttribute("href", url_);
+  }
+  function close_view_box() {
+    document.getElementById("entry_id_view").value = "";
+    document.getElementById("view_link").setAttribute("href", "");
+    document.getElementById("qr_code_image").src = ""; // Adjust the MIME type accordingly
+  }
+
+  function clear_fields() {
+    document.getElementById("model_name_update").value = "";
+    document.getElementById("report_number_update").value = "";
+    document.getElementById("issue_date_update").value = "";
+    document.getElementById("country_of_origin_update").value = "";
+    document.getElementById("contact_number_update").value = "";
+    document.getElementById("lab_name_update").value = "";
+    document.getElementById("manufacturer_name_update").value = "";
+    document.getElementById("pdf_file_exist").innerHTML = "";
+    document.getElementById("entry_id").value = "";
+  }
+
+  function fetch_updated_entry(entry_id) {
+    console.log(entry_id);
+
+    // update_entry_data
+    $.get(`/entries/${entry_id}`, function (data, status) {
+      console.log(status);
+      if (status == "success") {
+        document.getElementById("model_name_update").value = data["model_name"];
+        document.getElementById("report_number_update").value =
+          data["report_number"];
+        document.getElementById("issue_date_update").value = data["issue_date"];
+        document.getElementById("country_of_origin_update").value =
+          data["country_of_origin"];
+        document.getElementById("contact_number_update").value =
+          data["contact_number"];
+        document.getElementById("lab_name_update").value = data["lab_name"];
+        document.getElementById("manufacturer_name_update").value =
+          data["manufacturer_name"];
+        if (data["pdf_file_exist"]) {
+          document.getElementById("pdf_file_exist").innerHTML =
+            "<span class='text-success'>Pdf file already exist</span> If you want to replace it upload a new one.";
+        } else {
+          document.getElementById("pdf_file_exist").innerHTML =
+            "Upload a pdf file";
+        }
+        document.getElementById("entry_id").value = entry_id;
+      } else {
+        console.log("Error completing your request");
+      }
+    });
+  }
+</script>
+{%endblock%}

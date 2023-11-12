@@ -1,0 +1,31 @@
+{% extends "default.html" %} 
+
+{%block content%}
+<div class="row text-light">
+  <div class="col-12">
+    <h3 class="p-3"><span class="text-warning">Past</span> Auctions</h3>
+  </div>
+
+  <!-- Predictions  -->
+  {% for auction in list_of_auctions %}
+  <div class="col-12 col-md-6 col-lg-6 ">
+    <div class="row text-center my-3 mx-2 rounded bg-custom-black">
+      <div class="col-12 p-2 p-lg-3">
+        <div class="row m-0">
+          
+          <div class="col-auto py-1 text-warning"><span style="font-size:x-small">Cutoff : {{auction.timer.strftime('%d %B %Y %H:%M %p')}}</span></div>
+          <div class="col py-1">{{auction.name_of_item}}</div>
+          <div class="col">Highest Bidding Winner: {% if auction.previous_user_name is none %}{%else%}{{auction.username}}{%endif%}</div>
+          <div class="col py-1 text-success">{{auction.highest_bid}} <i class="fas fa-coins"></i></div>
+          
+      </div>
+    </div>
+    </div>
+    </div>
+  {% endfor %}
+
+  <!--  -->
+</div>
+
+{%endblock%}
+
