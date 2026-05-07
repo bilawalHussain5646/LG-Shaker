@@ -42,7 +42,7 @@ app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600  # Adjust as needed
 app.config['SQLALCHEMY_POOL_PRE_PING'] = True  # Adjust as needed
 
 # Set the secret key to sign the JWTs with
-app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
+app.config['JWT_SECRET_KEY'] = ''  # Change this!
 
 ACCESS_EXPIRES = timedelta(minutes=30)
 
