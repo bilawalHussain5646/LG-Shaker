@@ -5,10 +5,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 
-username = "hussain"
-password = "mv6cQY-]B8L-"
-host = "68.178.153.99" 
-database = "xtreme_entries"
+username = ""
+password = ""
+host = "" 
+database = ""
 
 database_file = f'mysql://{username}:{password}@{host}/{database}'
 
@@ -20,7 +20,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
 app.config['JSON_SORT_KEYS'] = False
 db = SQLAlchemy(app)
-app.secret_key = "saso_microsite_skey"
+app.secret_key = ""
 
 # Secret Key
 
